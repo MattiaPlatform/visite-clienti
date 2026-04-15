@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Client Visit Report - Aerial Platforms</title>
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -415,7 +416,7 @@ button {
   <button class="btn-whatsapp" onclick="sendWhatsApp()">Send via WhatsApp</button>
   <button class="btn-excel" onclick="downloadExcel()">Download Excel</button>
   <button class="btn-clear" onclick="clearForm()">Clear Form</button>
-  <div class="note">WhatsApp opens the report already written. Excel downloads a file you can save or share.</div>
+  <div class="note">WhatsApp opens the report already written. Excel downloads a real .xlsx file.</div>
 </div>
 ```
 
@@ -506,7 +507,7 @@ button {
     }
 
     function downloadExcel() {
-      const rows = [
+      const data = [
         ["Section", "Field", "Value"],
         ["1. Client Details", "Visit Date", getValue("visitDate")],
         ["1. Client Details", "Company", getValue("company")],
@@ -557,23 +558,21 @@ button {
         ["10. Free Notes", "Notes", getValue("freeNotes")]
       ];
 
-      const csvContent = rows.map(function(row) {
-        return row.map(function(value) {
-          const safe = (value || "").toString().replace(/"/g, '""');
-          return '"' + safe + '"';
-        }).join(",");
-      }).join("\n");
+      const worksheet = XLSX.utils.aoa_to_sheet(data);
 
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
+      worksheet["!cols"] = [
+        { wch: 28 },
+        { wch: 32 },
+        { wch: 60 }
+      ];
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
       const company = cleanFileName(getValue("company") || "Client");
       const visitDate = cleanFileName(getValue("visitDate") || "Visit");
 
-      link.href = URL.createObjectURL(blob);
-      link.download = company + "_" + visitDate + ".csv";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      XLSX.writeFile(workbook, company + "_" + visitDate + ".xlsx");
     }
 
     function clearForm() {
