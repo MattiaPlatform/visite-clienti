@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visita Cliente</title>
+<style>
+body { font-family: Arial; padding: 15px; }
+input, textarea { width: 100%; margin-bottom: 10px; padding: 10px; }
+button { padding: 15px; background: green; color: white; border: none; width: 100%; font-size: 16px; }
+</style>
+</head>
+
+<body>
+
+<h2>Visita Cliente</h2>
+
+<input type="text" id="azienda" placeholder="Nome azienda">
+<input type="text" id="fatturato" placeholder="Fatturato">
+<input type="number" id="macchine" placeholder="Numero macchine">
+<input type="text" id="marchi" placeholder="Marchi">
+<textarea id="note" placeholder="Note"></textarea>
+
+<button onclick="inviaWhatsApp()">Invia su WhatsApp</button>
+
+<script>
+function inviaWhatsApp() {
+  var azienda = document.getElementById("azienda").value;
+  var fatturato = document.getElementById("fatturato").value;
+  var macchine = document.getElementById("macchine").value;
+  var marchi = document.getElementById("marchi").value;
+  var note = document.getElementById("note").value;
+
+  var testo = "VISITA CLIENTE%0A%0A" +
+              "Azienda: " + azienda + "%0A" +
+              "Fatturato: " + fatturato + "%0A" +
+              "Macchine: " + macchine + "%0A" +
+              "Marchi: " + marchi + "%0A%0A" +
+              "Note: " + note;
+
+  var url = "https://wa.me/?text=" + testo;
+
+  window.open(url, "_blank");
+}
+</script>
+
+</body>
+</html>
