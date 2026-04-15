@@ -564,7 +564,9 @@
     }
 
     function cleanFileName(value) {
-      return value.replace(/[\\/:*?"<>|]/g, "").replace(/\s+/g, "_");
+      return String(value || "")
+        .replace(/[\\/:*?"<>|]/g, "")
+        .replace(/\s+/g, "_");
     }
 
     function sendWhatsApp() {
@@ -631,87 +633,102 @@
       window.open("https://wa.me/?text=" + encodeURIComponent(message), "_blank");
     }
 
-   function downloadExcel() {
-  const data = [{
-    "Visit Date": getValue("visitDate"),
-    "Company": getValue("company"),
-    "Head Office": getValue("office"),
-    "Contact Person": getValue("contactPerson"),
-    "Phone": getValue("phone"),
-    "Email": getValue("email"),
-    "Website": getValue("website"),
+    function downloadExcel() {
+      if (typeof XLSX === "undefined") {
+        alert("XLSX library not loaded.");
+        return;
+      }
 
-    "Business Type": getCheckedValues("businessType"),
-    "Employees": getValue("employees"),
-    "Operating Area": getValue("operatingArea"),
-    "Revenue": getValue("revenue"),
-
-    "Total Machines": getValue("totalMachines"),
-    "Similar Machines": getValue("similarMachines"),
-    "Fleet Types": getCheckedValues("fleetTypes"),
-    "Brands": getValue("brands"),
-    "Fleet Age": getValue("fleetAge"),
-    "Fleet Condition": getValue("fleetCondition"),
-
-    "Customer Sectors": getCheckedValues("customerSectors"),
-    "Usage Type": getCheckedValues("usageType"),
-    "Work Areas": getValue("workAreas"),
-
-    "Current Brands": getValue("currentBrands"),
-    "Purchase Frequency": getValue("purchaseFrequency"),
-    "Supplier Reasons": getCheckedValues("supplierReasons"),
-    "Supplier Issues": getValue("supplierProblems"),
-
-    "Current Needs": getValue("currentNeeds"),
-    "Missing Machines": getValue("missingMachines"),
-    "Interest": getCheckedValues("interestType"),
-    "Timing": getCheckedValues("timing"),
-
-    "Proposed Products": getValue("proposedProducts"),
-    "Strengths": getCheckedValues("strengths"),
-    "Competitors": getValue("competitors"),
-
-    "Interest Level": getValue("interestLevel"),
-    "Potential": getValue("potential"),
-    "Probability (%)": getValue("probability"),
-
-    "Follow Up": getCheckedValues("followUp"),
-    "Next Action": getValue("nextAction"),
-    "Next Contact Date": getValue("nextContactDate"),
-
-    "Notes": getValue("freeNotes")
-  }];
-
-  const ws = XLSX.utils.json_to_sheet(data);
-  ws["!cols"] = Object.keys(data[0]).map(() => ({ wch: 28 }));
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Report");
-
-  const company = cleanFileName(getValue("company") || "Client");
-  const date = cleanFileName(getValue("visitDate") || "Visit");
-
-  XLSX.writeFile(wb, company + "_" + date + ".xlsx");
-}
-
-function clearForm() {
-}
-
-  const ws = XLSX.utils.json_to_sheet(data);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Report");
-
-  const company = cleanFileName(getValue("company") || "Client");
-  const date = cleanFileName(getValue("visitDate") || "Visit");
-
-  XLSX.writeFile(wb, company + "_" + date + ".xlsx");
-}
-      const worksheet = XLSX.utils.aoa_to_sheet(data);
-      worksheet["!cols"] = [
-        { wch: 28 },
-        { wch: 32 },
-        { wch: 60 }
+      const headers = [
+        "Visit Date",
+        "Company",
+        "Head Office",
+        "Contact Person",
+        "Phone",
+        "Email",
+        "Website",
+        "Business Type",
+        "Employees",
+        "Operating Area",
+        "Revenue",
+        "Total Machines",
+        "Similar Machines",
+        "Fleet Types",
+        "Brands",
+        "Fleet Age",
+        "Fleet Condition",
+        "Customer Sectors",
+        "Usage Type",
+        "Work Areas",
+        "Current Brands",
+        "Purchase Frequency",
+        "Supplier Reasons",
+        "Supplier Issues",
+        "Current Needs",
+        "Missing Machines",
+        "Interest",
+        "Timing",
+        "Proposed Products",
+        "Strengths",
+        "Competitors",
+        "Interest Level",
+        "Potential",
+        "Probability (%)",
+        "Follow Up",
+        "Next Action",
+        "Next Contact Date",
+        "Notes"
       ];
+
+      const values = [
+        getValue("visitDate"),
+        getValue("company"),
+        getValue("office"),
+        getValue("contactPerson"),
+        getValue("phone"),
+        getValue("email"),
+        getValue("website"),
+        getCheckedValues("businessType"),
+        getValue("employees"),
+        getValue("operatingArea"),
+        getValue("revenue"),
+        getValue("totalMachines"),
+        getValue("similarMachines"),
+        getCheckedValues("fleetTypes"),
+        getValue("brands"),
+        getValue("fleetAge"),
+        getValue("fleetCondition"),
+        getCheckedValues("customerSectors"),
+        getCheckedValues("usageType"),
+        getValue("workAreas"),
+        getValue("currentBrands"),
+        getValue("purchaseFrequency"),
+        getCheckedValues("supplierReasons"),
+        getValue("supplierProblems"),
+        getValue("currentNeeds"),
+        getValue("missingMachines"),
+        getCheckedValues("interestType"),
+        getCheckedValues("timing"),
+        getValue("proposedProducts"),
+        getCheckedValues("strengths"),
+        getValue("competitors"),
+        getValue("interestLevel"),
+        getValue("potential"),
+        getValue("probability"),
+        getCheckedValues("followUp"),
+        getValue("nextAction"),
+        getValue("nextContactDate"),
+        getValue("freeNotes")
+      ];
+
+      const data = [headers, values];
+      const worksheet = XLSX.utils.aoa_to_sheet(data);
+
+      worksheet["!cols"] = headers.map(function(header, index) {
+        const value = values[index] ? String(values[index]) : "";
+        const maxLen = Math.max(header.length, value.length, 18);
+        return { wch: Math.min(maxLen + 2, 50) };
+      });
 
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
