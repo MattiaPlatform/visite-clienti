@@ -631,49 +631,66 @@
       window.open("https://wa.me/?text=" + encodeURIComponent(message), "_blank");
     }
 
-    function downloadExcel() {
-      const data = [
-        ["Section", "Field", "Value"],
-        ["1. Client Details", "Visit Date", getValue("visitDate")],
-        ["1. Client Details", "Company", getValue("company")],
-        ["1. Client Details", "Head Office / Location", getValue("office")],
-        ["1. Client Details", "Contact Person", getValue("contactPerson")],
-        ["1. Client Details", "Phone", getValue("phone")],
-        ["1. Client Details", "Email", getValue("email")],
-        ["1. Client Details", "Website", getValue("website")],
-        ["2. Company Profile", "Business Type", getCheckedValues("businessType")],
-        ["2. Company Profile", "Employees", getValue("employees")],
-        ["2. Company Profile", "Operating Area", getValue("operatingArea")],
-        ["2. Company Profile", "Estimated Revenue", getValue("revenue")],
-        ["3. Fleet Information", "Total Machines", getValue("totalMachines")],
-        ["3. Fleet Information", "Machines Similar to Ours", getValue("similarMachines")],
-        ["3. Fleet Information", "Fleet Types", getCheckedValues("fleetTypes")],
-        ["3. Fleet Information", "Main Brands", getValue("brands")],
-        ["3. Fleet Information", "Average Fleet Age", getValue("fleetAge")],
-        ["3. Fleet Information", "Fleet Condition", getValue("fleetCondition")],
-        ["4. Market and Usage", "Customer Sectors", getCheckedValues("customerSectors")],
-        ["4. Market and Usage", "Usage Type", getCheckedValues("usageType")],
-        ["4. Market and Usage", "Main Operating Areas", getValue("workAreas")],
-        ["5. Current Suppliers", "Current Brands", getValue("currentBrands")],
-        ["5. Current Suppliers", "Purchase Frequency", getValue("purchaseFrequency")],
-        ["5. Current Suppliers", "Why They Choose Current Suppliers", getCheckedValues("supplierReasons")],
-        ["5. Current Suppliers", "Issues / Weaknesses", getValue("supplierProblems")],
-        ["6. Needs and Opportunities", "Current Needs", getValue("currentNeeds")],
-        ["6. Needs and Opportunities", "Missing Machines", getValue("missingMachines")],
-        ["6. Needs and Opportunities", "Interest In", getCheckedValues("interestType")],
-        ["6. Needs and Opportunities", "Timing", getCheckedValues("timing")],
-        ["7. Commercial Positioning", "Proposed Products", getValue("proposedProducts")],
-        ["7. Commercial Positioning", "Key Strengths", getCheckedValues("strengths")],
-        ["7. Commercial Positioning", "Competitors", getValue("competitors")],
-        ["8. Client Evaluation", "Interest Level", getValue("interestLevel")],
-        ["8. Client Evaluation", "Potential", getValue("potential")],
-        ["8. Client Evaluation", "Sales Probability", getValue("probability") ? getValue("probability") + "%" : ""],
-        ["9. Follow-Up", "Next Actions", getCheckedValues("followUp")],
-        ["9. Follow-Up", "Next Planned Action", getValue("nextAction")],
-        ["9. Follow-Up", "Next Contact Date", getValue("nextContactDate")],
-        ["10. Free Notes", "Notes", getValue("freeNotes")]
-      ];
+   function downloadExcel() {
+  const data = [{
+    "Visit Date": getValue("visitDate"),
+    "Company": getValue("company"),
+    "Head Office": getValue("office"),
+    "Contact Person": getValue("contactPerson"),
+    "Phone": getValue("phone"),
+    "Email": getValue("email"),
+    "Website": getValue("website"),
 
+    "Business Type": getCheckedValues("businessType"),
+    "Employees": getValue("employees"),
+    "Operating Area": getValue("operatingArea"),
+    "Revenue": getValue("revenue"),
+
+    "Total Machines": getValue("totalMachines"),
+    "Similar Machines": getValue("similarMachines"),
+    "Fleet Types": getCheckedValues("fleetTypes"),
+    "Brands": getValue("brands"),
+    "Fleet Age": getValue("fleetAge"),
+    "Fleet Condition": getValue("fleetCondition"),
+
+    "Customer Sectors": getCheckedValues("customerSectors"),
+    "Usage Type": getCheckedValues("usageType"),
+    "Work Areas": getValue("workAreas"),
+
+    "Current Brands": getValue("currentBrands"),
+    "Purchase Frequency": getValue("purchaseFrequency"),
+    "Supplier Reasons": getCheckedValues("supplierReasons"),
+    "Supplier Issues": getValue("supplierProblems"),
+
+    "Current Needs": getValue("currentNeeds"),
+    "Missing Machines": getValue("missingMachines"),
+    "Interest": getCheckedValues("interestType"),
+    "Timing": getCheckedValues("timing"),
+
+    "Proposed Products": getValue("proposedProducts"),
+    "Strengths": getCheckedValues("strengths"),
+    "Competitors": getValue("competitors"),
+
+    "Interest Level": getValue("interestLevel"),
+    "Potential": getValue("potential"),
+    "Probability (%)": getValue("probability"),
+
+    "Follow Up": getCheckedValues("followUp"),
+    "Next Action": getValue("nextAction"),
+    "Next Contact Date": getValue("nextContactDate"),
+
+    "Notes": getValue("freeNotes")
+  }];
+
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Report");
+
+  const company = cleanFileName(getValue("company") || "Client");
+  const date = cleanFileName(getValue("visitDate") || "Visit");
+
+  XLSX.writeFile(wb, company + "_" + date + ".xlsx");
+}
       const worksheet = XLSX.utils.aoa_to_sheet(data);
       worksheet["!cols"] = [
         { wch: 28 },
